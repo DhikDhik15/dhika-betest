@@ -1,0 +1,15 @@
+{
+  "name": "ms-dhika-betest",
+  "version": "1.0.0",
+  "description": "nodeJs microservices test",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "node",
+    "microservices"
+  ],
+  "author": "dhika",
+  "license": "ISC"
+}
