@@ -24,13 +24,17 @@ app.listen(SERVICE, () => {
     console.log(`--->Service on PORT ${SERVICE}<---`);
 });
 
+// define routes
+var route = require('./routes/route')
+route(app);
+
 /*MONGODB*/
 mongoose.connect('mongodb://127.0.0.1:27017/db_dhika_betest');
 const MONGODB = process.env.PORT_MONGO;
 
 mongoose.connection
     .once("open", function () {
-    console.log(`--->DB on PORT ${MONGODB}<---`);
+    console.log(`--->DB MONGO on PORT ${MONGODB}<---`);
 })
     .on("error", function (error) {
     console.log("error is:", error);
