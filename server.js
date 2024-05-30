@@ -5,7 +5,6 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-
 dotenv.config();
 
 /*parse requests of content-type - application/json*/
@@ -39,3 +38,21 @@ mongoose.connection
     .on("error", function (error) {
     console.log("error is:", error);
 });
+
+// REDIS
+REDIS_PORT = process.env.REDIS_PORT;
+const redisClient = require('./config-redis');
+redisClient.connect(
+    console.log(`Connected to Redis on port ${REDIS_PORT}.`)
+)
+
+
+// redisClient.connect();
+// var redis = require('redis'),
+//     client = redis.createClient();
+// client.on('error', function(err){
+// console.log('Error ' + err);
+// });
+
+
+// console.log('Connection is establishing now...');
