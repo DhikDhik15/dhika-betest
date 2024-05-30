@@ -45,14 +45,3 @@ const redisClient = require('./config-redis');
 redisClient.connect(
     console.log(`Connected to Redis on port ${REDIS_PORT}.`)
 )
-
-
-// redisClient.connect();
-// var redis = require('redis'),
-//     client = redis.createClient();
-// client.on('error', function(err){
-// console.log('Error ' + err);
-// });
-
-
-// console.log('Connection is establishing now...');
