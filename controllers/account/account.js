@@ -8,7 +8,8 @@ exports.createAccount = async (req, res) => {
     try {
         const add = {
             userName : req.body.name,
-            password : bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10)),
+            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10)),
+            userId: req.body.user_id
         }
 
         const create = await Account.createAccount({
@@ -25,7 +26,7 @@ exports.createAccount = async (req, res) => {
 
         res.status(200).json({
             status: true,
-            message: 'registration successfully',
+            message: 'create account successfully',
             data: create,
             token
         })
@@ -80,5 +81,20 @@ exports.login = async (req, res) => {
         res.status(401).json({
             message: 'Forbidden login !!!'
         });
+    }
+}
+
+exports.userAccount = async (req, res) => {
+    try {
+        const Users = await Account.getUserAccount(req.params.id);
+        res.status(200).json({
+            status: true,
+            data: Users,
+        })
+    } catch (error) {
+        res.status(500).json({
+            error: error,
+            status: false
+        })
     }
 }

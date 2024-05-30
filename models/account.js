@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const accountSchema = new Schema({
+const accountSchema = mongoose.Schema({
     userName: {
         type: String,
         required: true
@@ -14,7 +13,8 @@ const accountSchema = new Schema({
         type: Date
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
     }
 },{
     timestamps: true

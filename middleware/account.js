@@ -16,3 +16,11 @@ exports.findAccount = async name => {
     });
     return account;
 }
+
+exports.getUserAccount = async id => {
+    const users = await Account.findById(id).populate({
+        path: "userId",
+        select: 'userName fullName accountNumber emailAddress registrationNumber'
+    });
+    return users;
+}
