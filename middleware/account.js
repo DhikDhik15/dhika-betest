@@ -24,3 +24,14 @@ exports.getUserAccount = async id => {
     });
     return users;
 }
+
+// $gte =  Operator Greater Than or Equal to, digunakan untuk mencari pengguna yang last login lebih besar dari atau sama dengan 3 hari yang lalu
+// $lte =  Operator Less Than or Equal to, digunakan untuk mencari pengguna yang last login kurang dari atau sama dengan hari ini 
+exports.getLastLogin = async date => {
+    const users = await Account.find({
+        updatedAt: {
+            $gte: date, $lte: new Date()
+        }
+    });
+    return users;
+}

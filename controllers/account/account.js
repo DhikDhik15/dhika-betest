@@ -4,6 +4,7 @@ const Account = require('../../middleware/account');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const client = require('../../config-redis');
+const moment = require('moment');
 
 exports.createAccount = async (req, res) => {
     try {
@@ -109,6 +110,23 @@ exports.userKey = async (req, res, next) => {
         }
         // Set data in cache with expiry
         client.setex(key, 60, cachedData); // Cache for 60 seconds
+    } catch (error) {
+        res.status(500).json({
+            error: error,
+            status: false
+        })
+    }
+}
+
+exports.lastLogin = async (req, res) => {
+    // Mencari pengguna yang last login 3 hari yang lalu
+    const threeDaysAgo = moment().subtract(3, 'days').toDate();
+    try {
+        const last = await Account.getLastLogin(threeDaysAgo);
+        res.status(200).json({
+            status: true,
+            data: last,
+        })
     } catch (error) {
         res.status(500).json({
             error: error,

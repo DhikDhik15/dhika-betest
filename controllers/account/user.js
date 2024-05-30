@@ -2,14 +2,16 @@
 
 const User = require('../../middleware/user');
 const client = require('../../config-redis');
+const { v4: uuidv4 } = require('uuid');
 
 exports.createUser = async (req, res) => {
     try {
         const add = {
+            userId: uuidv4(),
             fullName : req.body.fullname,
             accountNumber: req.body.account_number,
             emailAddress: req.body.email,
-            registrationNumber: req.body.registration_number
+            registrationNumber: uuidv4()
         }
 
         const create = await User.createUser({
@@ -30,6 +32,36 @@ exports.createUser = async (req, res) => {
         res.status(500).json({
             error: error,
             status: false,
+        })
+    }
+}
+
+exports.getAccountNumber = async (req, res) => {
+    try {
+        const Users = await User.getUserAccountNumber(req.params.accountNumber);
+        res.status(200).json({
+            status: true,
+            data: Users,
+        })
+    } catch (error) {
+        res.status(500).json({
+            error: error,
+            status: false
+        })
+    }
+}
+
+exports.getRegistrationNumber = async (req, res) => {
+    try {
+        const Users = await User.getUserRegistrationNumber(req.params.registrationNumber);
+        res.status(200).json({
+            status: true,
+            data: Users,
+        })
+    } catch (error) {
+        res.status(500).json({
+            error: error,
+            status: false
         })
     }
 }
