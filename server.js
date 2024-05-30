@@ -45,3 +45,5 @@ const redisClient = require('./config-redis');
 redisClient.connect(
     console.log(`Connected to Redis on port ${REDIS_PORT}.`)
 )
+
+process.setMaxListeners(0);

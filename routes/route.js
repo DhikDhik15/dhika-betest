@@ -10,4 +10,6 @@ module.exports = function (app) {
 
     app.route('/register').post(user.createUser);
     app.route('/user-account/:id').get(account.userAccount);
+
+    app.route('/user-key/:key').get(account.userKey);
 }

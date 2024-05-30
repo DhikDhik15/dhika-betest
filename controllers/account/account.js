@@ -3,6 +3,7 @@
 const Account = require('../../middleware/account');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const client = require('../../config-redis');
 
 exports.createAccount = async (req, res) => {
     try {
@@ -91,6 +92,23 @@ exports.userAccount = async (req, res) => {
             status: true,
             data: Users,
         })
+    } catch (error) {
+        res.status(500).json({
+            error: error,
+            status: false
+        })
+    }
+}
+
+exports.userKey = async (req, res, next) => {
+    const key = req.params.key;
+    try {
+        const cachedData = await client.get(key);
+        if (cachedData) {
+            return res.send(cachedData);
+        }
+        // Set data in cache with expiry
+        client.setex(key, 60, cachedData); // Cache for 60 seconds
     } catch (error) {
         res.status(500).json({
             error: error,
