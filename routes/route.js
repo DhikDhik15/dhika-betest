@@ -17,6 +17,4 @@ module.exports = function (app) {
     app.route('/last-login').get(account.lastLogin);
 
     app.route('/user-key/:key').get(account.userKey);
-
-    // app.route('unit-test').get(test.lastLogin);
 }
