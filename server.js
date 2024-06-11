@@ -17,15 +17,16 @@ app.use(
     })
 );
 
-// define port
-const SERVICE = process.env.PORT;
-app.listen(SERVICE, () => {
-    console.log(`--->Service on PORT ${SERVICE}<---`);
-});
-
 // define routes
 var route = require('./routes/route')
 route(app);
+require('./routes/auth')(app);
+
+// define port
+const SERVICE = process.env.PORT;
+app.listen(SERVICE, () => {
+    console.log(`--->Service PORT ${SERVICE}<---`);
+});
 
 /*MONGODB*/
 mongoose.connect('mongodb://127.0.0.1:27017/db_dhika_betest');
@@ -33,7 +34,7 @@ const MONGODB = process.env.PORT_MONGO;
 
 mongoose.connection
     .once("open", function () {
-    console.log(`--->DB MONGO on PORT ${MONGODB}<---`);
+    console.log(`--->MONGO PORT ${MONGODB}<---`);
 })
     .on("error", function (error) {
     console.log("error is:", error);
@@ -43,7 +44,7 @@ mongoose.connection
 REDIS_PORT = process.env.REDIS_PORT;
 const redisClient = require('./config-redis');
 redisClient.connect(
-    console.log(`Connected to Redis on port ${REDIS_PORT}.`)
+    console.log(`--->Redis port ${REDIS_PORT} <---`)
 )
 
 process.setMaxListeners(0);

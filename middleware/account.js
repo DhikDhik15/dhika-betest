@@ -10,9 +10,9 @@ exports.createAccount = async add => {
     return newAccount
 }
 
-exports.findAccount = async name => {
+exports.findAccount = async email => {
     const account = await Account.findOne({
-        userName: name
+        email: email
     });
     return account;
 }

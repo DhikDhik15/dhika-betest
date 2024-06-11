@@ -4,86 +4,72 @@ const Account = require('../../middleware/account');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const client = require('../../config-redis');
+const { createSecretToken } = require('../../generateToken');
 const moment = require('moment');
 
 exports.createAccount = async (req, res) => {
-    try {
-        const add = {
-            userName : req.body.name,
-            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10)),
-            userId: req.body.user_id
+    try { 
+        const salt = 10;
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    
+        const newUser = {
+            name: req.body.name,
+            username: req.body.username,
+            email: req.body.email,
+            password: hashedPassword,
+        };
+
+        const oldUser = await Account.findAccount(newUser.email);
+
+        if (oldUser) {
+            return res.status(409).send("User Already Exist. Please Login");
         }
+        const user = await Account.createAccount({
+            ...newUser
+        });
+        const token = createSecretToken(user._id);
 
-        const create = await Account.createAccount({
-            ...add
+        res.cookie("token", token, {
+            path: "/", // Cookie is accessible from all paths
+            expires: new Date(Date.now() + 86400000), // Cookie expires in 1 day
+            secure: true, // Cookie will only be sent over HTTPS
+            httpOnly: true, // Cookie cannot be accessed via client-side scripts
+            sameSite: "None",
         });
 
-        const token = jwt.sign({
-            userId: create._id, add
-        }, process.env.TOKEN, {
-            expiresIn: "1d"
-        });
+        console.log("cookie set succesfully");
 
-        create.token = token;
-
-        res.status(200).json({
-            status: true,
-            message: 'create account successfully',
-            data: create,
-            token
-        })
+        res.json(user);
     } catch (error) {
-        console.log(error)
-        res.status(500).json({
-            error: error,
-            status: false,
-        })
+        console.log("Gott an error", error);
     }
 }
 
 exports.login = async (req, res) => {
     const login = {
-        userName : req.body.name,
+        email : req.body.email,
         password : req.body.password,
     }
 
     const user = await Account.findAccount(
-        login.userName
+        login.email
     );
 
-    if (bcrypt.compareSync(user.password, bcrypt.hashSync(user.password, bcrypt.genSaltSync(10)))) {
-
-        /*Create token*/
-        const token = jwt.sign({
-            userId: user._id, login
-        }, process.env.TOKEN, {
-            algorithm: "HS256",
-            expiresIn: "2d"
-        });
-
-        /*Create refresh token*/
-        const refreshToken = jwt.sign({
-            userId: user._id, login
-        }, process.env.REFRESH_TOKEN,{
-            algorithm: "HS256",
-            expiresIn: "2d"
-        })
-
-        /*Save refersh token*/
-        user.refreshToken= refreshToken;
-        
-        /*Save Token*/
-        user.token = token;
-        res.status(201).json({
-            message: 'Login successfully',
-            user,
-        });
-        res.send()
-    } else {
-        res.status(401).json({
-            message: 'Forbidden login !!!'
-        });
+    if (!(user && (await bcrypt.compareSync(login.password, user.password)))) {
+        return res.status(404).json({ message: "Invalid credentials" });
     }
+
+    const token = createSecretToken(user._id);
+    res.cookie("token", token, {
+        domain: process.env.frontend_url, // Set your domain here
+        path: "/", // Cookie is accessible from all paths
+        expires: new Date(Date.now() + 86400000), // Cookie expires in 1 day
+        secure: true, // Cookie will only be sent over HTTPS
+        httpOnly: true, // Cookie cannot be accessed via client-side scripts
+        sameSite: "None",
+    });
+
+    res.json({ token });
 }
 
 exports.userAccount = async (req, res) => {
