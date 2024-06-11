@@ -6,4 +6,5 @@ module.exports = function (app) {
     const account = require('../controllers/account/account');
 
     app.route('/auth/login').get(account.login);
+    app.route('/auth/logout').get(account.logout);
 }
